@@ -1,14 +1,9 @@
 import time
-
-from django.views.generic import RedirectView
+from datetime import timedelta, datetime
 from rest_framework.views import APIView
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import action, api_view
-from rest_framework.permissions import AllowAny
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view
 from .models import Url
 from .serializers import UrlSerializers, UrlReadSerializers
 
@@ -30,4 +25,9 @@ class ShortView(APIView):
     def get(self, request, url):
         urls = Url.objects.filter(short_url=url)
         serializer = UrlReadSerializers(urls, many=True)
-        return Response(serializer.data)
+        lifetime = timedelta(urls.values('lifetime').get().get('lifetime'))
+        time_url = urls.values('time_url').get().get('time_url')
+        now = datetime.now().date()
+        if lifetime + time_url > now:
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
