@@ -1,9 +1,9 @@
-from pathlib import Path
-from datetime import timedelta
 import os
+from datetime import timedelta
+from pathlib import Path
+
 import environ
 from django.core.management.utils import get_random_secret_key
-
 
 env = environ.Env(
     DEBUG=(bool, True),

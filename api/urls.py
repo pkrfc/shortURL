@@ -1,7 +1,6 @@
 from django.urls import path
 
-from api.views import short, ShortView
-
+from api.views import ShortView, short
 
 urlpatterns = [
     path('short/', short, name='short'),

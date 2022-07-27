@@ -1,11 +1,13 @@
 import time
-from datetime import timedelta, datetime
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from datetime import datetime, timedelta
+
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Url
-from .serializers import UrlSerializers, UrlReadSerializers
+from .serializers import UrlReadSerializers, UrlSerializers
 
 
 @api_view(['POST'])
@@ -13,8 +15,15 @@ def short(request):
     main_url = request.data.get('main_url')
     lifetime = request.data.get('lifetime')
     short_url = int(time.time())
-    short_url_view = 'http://127.0.0.1:8000/api/short-you-url/' + str(short_url)
-    data = {'main_url': main_url, 'short_url': short_url, 'short_url_view': short_url_view, 'lifetime': lifetime}
+    short_url_view = 'http://127.0.0.1:8000/api/short-you-url/' + str(
+        short_url
+    )
+    data = {
+        'main_url': main_url,
+        'short_url': short_url,
+        'short_url_view': short_url_view,
+        'lifetime': lifetime
+    }
     serializer = UrlSerializers(data=data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
