@@ -12,9 +12,8 @@ from .serializers import UrlSerializers, UrlReadSerializers
 def short(request):
     main_url = request.data.get('main_url')
     lifetime = request.data.get('lifetime')
-    user = request.user.id
-    short_url = str(int(time.time())) + str(user)
-    short_url_view = 'http://127.0.0.1:8000/api/short-you-url/' + short_url
+    short_url = int(time.time())
+    short_url_view = 'http://127.0.0.1:8000/api/short-you-url/' + str(short_url)
     data = {'main_url': main_url, 'short_url': short_url, 'short_url_view': short_url_view, 'lifetime': lifetime}
     serializer = UrlSerializers(data=data)
     serializer.is_valid(raise_exception=True)

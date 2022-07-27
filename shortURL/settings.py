@@ -1,13 +1,33 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+import environ
+from django.core.management.utils import get_random_secret_key
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-&f(kyuzz)c4cgc_j9d7v8ajti!v%#lvp=olaz!1et=#o*l7sm('
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, '*'),
+    ALLOWED_HOSTS=(list, []),
+    DB_NAME=str,
+    POSTGRES_USER=str,
+    POSTGRES_PASSWORD=str,
+    DB_HOST=str,
+    DB_PORT=int,
+)
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+environ.Env.read_env()
+
+SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +57,7 @@ ROOT_URLCONF = 'shortURL.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': []
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -54,13 +74,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shortURL.wsgi.application'
 
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'default': {
+            'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
+            'NAME': env('DB_NAME', default='postgres'),
+            'USER': env('POSTGRES_USER', default='postgres'),
+            'PASSWORD': env('POSTGRES_PASSWORD', default='postgres'),
+            'HOST': env('DB_HOST', default='db'),
+            'PORT': env('DB_PORT', default='5432')
+        }
     }
-}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -104,5 +127,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
